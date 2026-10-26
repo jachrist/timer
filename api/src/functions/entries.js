@@ -1,0 +1,52 @@
+const { app } = require('@azure/functions');
+const store = require('../store');
+
+const TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+const ID = /^[\w-]{1,64}$/;
+
+// Static Web Apps sender innlogget bruker i denne headeren. Hver bruker får sin egen partisjon.
+function userId(req) {
+  const header = req.headers.get('x-ms-client-principal');
+  if (!header) return 'lokal';
+  return JSON.parse(Buffer.from(header, 'base64').toString('utf8')).userId;
+}
+
+function clean(e) {
+  if (!e || !ID.test(e.id)) throw new Error('Ugyldig id');
+  if (!TIME.test(e.start) || !TIME.test(e.slutt)) throw new Error('Ugyldig start eller slutt');
+  const num = v => (Number.isFinite(+v) ? +v : 0);
+  return {
+    id: e.id,
+    start: e.start,
+    slutt: e.slutt,
+    beskrivelse: String(e.beskrivelse ?? '').slice(0, 4000),
+    nettoSats: num(e.nettoSats),
+    fakturertSats: num(e.fakturertSats),
+  };
+}
+
+// GET: alle registreringer. PUT: lagre (opprett eller oppdater) en liste registreringer.
+async function entries(req) {
+  const user = userId(req);
+  if (req.method === 'GET') return { jsonBody: await store.list(user) };
+  let list;
+  try {
+    const body = await req.json();
+    list = (Array.isArray(body) ? body : [body]).map(clean);
+    if (list.length > 5000) throw new Error('For mange registreringer i én forespørsel');
+  } catch (err) {
+    return { status: 400, jsonBody: { feil: err.message } };
+  }
+  await store.save(user, list);
+  return { jsonBody: list };
+}
+
+async function remove(req) {
+  await store.remove(userId(req), req.params.id);
+  return { status: 204 };
+}
+
+app.http('entries', { methods: ['GET', 'PUT'], authLevel: 'anonymous', route: 'entries', handler: entries });
+app.http('entry', { methods: ['DELETE'], authLevel: 'anonymous', route: 'entries/{id}', handler: remove });
+
+module.exports = { entries, remove };

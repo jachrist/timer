@@ -1,0 +1,12 @@
+{
+  "routes": [
+    { "route": "/manifest.webmanifest", "allowedRoles": ["anonymous"] },
+    { "route": "/icon*", "allowedRoles": ["anonymous"] },
+    { "route": "/*", "allowedRoles": ["eier"] }
+  ],
+  "responseOverrides": {
+    "401": { "redirect": "/.auth/login/aad?post_login_redirect_uri=/", "statusCode": 302 }
+  },
+  "mimeTypes": { ".webmanifest": "application/manifest+json" },
+  "platform": { "apiRuntime": "node:22" }
+}

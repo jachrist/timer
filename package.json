@@ -1,0 +1,9 @@
+{
+  "name": "timer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "npx @azure/static-web-apps-cli start app --api-location api"
+  }
+}

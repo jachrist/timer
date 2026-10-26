@@ -1,0 +1,119 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1c2128;
+  --muted: #656d76;
+  --line: #d8dee4;
+  --soft: #f3f5f7;
+  --accent: #1f6feb;
+  --cur: #e8f0fe;
+  --danger: #cf222e;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #8d96a0;
+    --line: #30363d;
+    --soft: #161b22;
+    --accent: #4493f8;
+    --cur: #132339;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+button, select, input, textarea { font: inherit; color: inherit; }
+button, select {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  border-radius: 6px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+input, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  background: var(--bg);
+  min-width: 0;
+}
+
+header, #summary, footer { padding: 0.6rem 1rem; }
+header { display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--line); }
+header h1 { margin: 0 auto 0 0; font-size: 1.2rem; }
+
+#summary { border-bottom: 1px solid var(--line); }
+.period { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+#plabel { min-width: 9rem; text-align: center; font-weight: 600; text-transform: capitalize; }
+#copyPeriod { margin-left: auto; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.6rem; }
+.cards div { background: var(--soft); border-radius: 8px; padding: 0.5rem 0.75rem; }
+.cards span { display: block; color: var(--muted); font-size: 0.85rem; }
+.cards b { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+
+#list { flex: 1; overflow-y: auto; }
+#empty { flex: 1; padding: 1rem; color: var(--muted); }
+.row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr 4.5rem 6.5rem auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.45rem 1rem;
+  border-bottom: 1px solid var(--line);
+  border-left: 3px solid transparent;
+}
+.row.cur { background: var(--cur); border-left-color: var(--accent); }
+.when b { display: block; font-weight: 600; }
+.when span, .num { font-variant-numeric: tabular-nums; }
+.when span { color: var(--muted); }
+.text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.num { text-align: right; }
+.act { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.act button { padding: 0.2rem 0.5rem; }
+
+.row.edit { grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--soft); border-left-color: var(--accent); }
+.row.edit label { font-size: 0.85rem; color: var(--muted); }
+.row.edit .wide { grid-column: 1 / -1; }
+.row.edit .calc { grid-column: 1 / 3; align-self: center; font-variant-numeric: tabular-nums; }
+.row.edit .act { grid-column: 3 / -1; justify-content: flex-end; }
+.act [data-act="delete"] { color: var(--danger); }
+
+footer { border-top: 1px solid var(--line); display: flex; justify-content: flex-end; }
+
+#toast {
+  position: fixed; left: 50%; bottom: 4.5rem; transform: translateX(-50%);
+  background: var(--fg); color: var(--bg); padding: 0.5rem 1rem; border-radius: 6px;
+  opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+#toast.show { opacity: 1; }
+
+dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); width: min(36rem, 95vw); }
+dialog h2 { margin-top: 0; }
+dialog fieldset { border: 1px solid var(--line); border-radius: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+dialog label { display: grid; gap: 0.2rem; font-size: 0.9rem; }
+#importPreview { color: var(--muted); font-size: 0.85rem; padding-left: 1.2rem; }
+dialog menu { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0; }
+
+@media (max-width: 640px) {
+  header, #summary, footer { padding: 0.5rem 0.75rem; }
+  .row { grid-template-columns: 1fr auto auto auto;gap: 0.25rem 0.6rem; padding: 0.45rem 0.75rem; }
+  .row .when { grid-column: 1; }
+  .row .text { grid-column: 1 / -1; grid-row: 2; }
+  .row.edit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .row.edit .calc, .row.edit .act { grid-column: 1 / -1; }
+  .cards b { font-size: 1.05rem; }
+  #copyPeriod { margin-left: 0; }
+}
