@@ -1,0 +1,9 @@
+{
+  "name": "timer-api",
+  "private": true,
+  "main": "src/functions/*.js",
+  "dependencies": {
+    "@azure/data-tables": "^13.3.2",
+    "@azure/functions": "^4.17.0"
+  }
+}

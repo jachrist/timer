@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timer</title>
+  <meta name="theme-color" content="#1f6feb">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Timer</h1>
+    <button id="importBtn" type="button">Importer Excel</button>
+    <button id="exportBtn" type="button">Eksporter</button>
+    <input id="file" type="file" accept=".xlsx,.xls,.csv" hidden>
+  </header>
+
+  <section id="summary">
+    <div class="period">
+      <select id="ptype" aria-label="Periodetype">
+        <option value="uke">Uke</option>
+        <option value="maned">Måned</option>
+        <option value="aar">År</option>
+      </select>
+      <button id="prev" type="button" aria-label="Forrige periode">◀</button>
+      <span id="plabel"></span>
+      <button id="next" type="button" aria-label="Neste periode">▶</button>
+      <button id="today" type="button">Nå</button>
+      <button id="copyPeriod" type="button" title="Kopier periodens linjer som tabell">Kopier periode</button>
+    </div>
+    <div class="cards">
+      <div><span>Timer</span><b id="sTimer"></b></div>
+      <div><span>Netto</span><b id="sNetto"></b></div>
+      <div><span>Fakturert</span><b id="sFakt"></b></div>
+    </div>
+  </section>
+
+  <main id="list"></main>
+  <p id="empty" hidden>Ingen registreringer ennå. Importer fra Excel eller legg til en ny.</p>
+
+  <footer>
+    <button id="newBtn" type="button" class="primary">+ Ny registrering</button>
+  </footer>
+
+  <div id="toast" role="status"></div>
+
+  <dialog id="importDlg">
+    <form id="importForm" method="dialog">
+      <h2>Importer fra Excel</h2>
+      <label>Ark <select name="sheet"></select></label>
+      <fieldset id="mapping"><legend>Kolonner</legend></fieldset>
+      <fieldset>
+        <legend>Timepris der arket mangler den</legend>
+        <label>Netto <input name="nettoSats" type="number" min="0" step="any"></label>
+        <label>Fakturert <input name="fakturertSats" type="number" min="0" step="any"></label>
+      </fieldset>
+      <p id="importInfo"></p>
+      <ul id="importPreview"></ul>
+      <menu>
+        <button value="cancel" formnovalidate>Avbryt</button>
+        <button value="ok" class="primary">Importer</button>
+      </menu>
+    </form>
+  </dialog>
+</body>
+</html>
