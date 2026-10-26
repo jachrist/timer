@@ -5,11 +5,20 @@ const TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 const ID = /^[\w-]{1,64}$/;
 
 // Static Web Apps sender innlogget bruker i denne headeren. Hver bruker får sin egen partisjon.
-function userId(req) {
+// Bare e-postadresser i TILLATTE_BRUKERE (kommaseparert) slipper til.
+function principal(req) {
   const header = req.headers.get('x-ms-client-principal');
-  if (!header) return 'lokal';
-  return JSON.parse(Buffer.from(header, 'base64').toString('utf8')).userId;
+  if (!header) return { userId: 'lokal' };
+  return JSON.parse(Buffer.from(header, 'base64').toString('utf8'));
 }
+
+function allowed(p) {
+  if (p.userId === 'lokal') return true;
+  const list = (process.env.TILLATTE_BRUKERE ?? '').toLowerCase().split(',').map(s => s.trim());
+  return list.includes(String(p.userDetails).toLowerCase());
+}
+
+const forbidden = p => ({ status: 403, jsonBody: { feil: `Ingen tilgang for ${p.userDetails}. Legg adressen inn i TILLATTE_BRUKERE.` } });
 
 function clean(e) {
   if (!e || !ID.test(e.id)) throw new Error('Ugyldig id');
@@ -27,7 +36,9 @@ function clean(e) {
 
 // GET: alle registreringer. PUT: lagre (opprett eller oppdater) en liste registreringer.
 async function entries(req) {
-  const user = userId(req);
+  const p = principal(req);
+  if (!allowed(p)) return forbidden(p);
+  const user = p.userId;
   if (req.method === 'GET') return { jsonBody: await store.list(user) };
   let list;
   try {
@@ -42,7 +53,9 @@ async function entries(req) {
 }
 
 async function remove(req) {
-  await store.remove(userId(req), req.params.id);
+  const p = principal(req);
+  if (!allowed(p)) return forbidden(p);
+  await store.remove(p.userId, req.params.id);
   return { status: 204 };
 }
 

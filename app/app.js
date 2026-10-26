@@ -26,7 +26,10 @@ async function api(method, path, body) {
     headers: body ? { 'Content-Type': 'application/json' } : {},
     body: body && JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`Feil fra server (${res.status})`);
+  if (!res.ok) {
+    const msg = await res.json().then(b => b.feil, () => null);
+    throw new Error(msg || `Feil fra server (${res.status})`);
+  }
   if (res.status === 204) return null;
   if (!res.headers.get('content-type')?.includes('json')) throw new Error('Du er logget ut – last siden på nytt');
   return res.json();

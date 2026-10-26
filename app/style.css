@@ -54,6 +54,7 @@ input, textarea {
 header, #summary, footer { padding: 0.6rem 1rem; }
 header { display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--line); }
 header h1 { margin: 0 auto 0 0; font-size: 1.2rem; }
+header a { color: var(--muted); font-size: 0.9rem; }
 
 #summary { border-bottom: 1px solid var(--line); }
 .period { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
