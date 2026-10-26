@@ -33,7 +33,7 @@ npm start      # SWA CLI: app på http://localhost:4280 med API og simulert innl
 Uten `STORAGE_CONNECTION_STRING` lagres data i `api/.data/entries.json`.
 Ved simulert innlogging må adressen du oppgir stå i `TILLATTE_BRUKERE` (f.eks. i `api/local.settings.json`).
 
-## Oppsett i Azure (én gang)
+## Oppsett i Azure (én gang) - gjort
 
 1. Opprett en **Storage account** og kopier connection string.
 2. Opprett en **Static Web App** (Free-planen holder) med deployment source «Other».
