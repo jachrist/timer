@@ -20,7 +20,7 @@ Kan installeres som app (PWA) på PC og mobil.
 | `app/` | Statisk PWA, vanilla JS uten byggesteg. SheetJS lastes fra CDN ved import og eksport. |
 | `api/` | Azure Functions (Node 22), kjøres som managed API i Static Web Apps. |
 | Lagring | Azure Table Storage (tabell `registreringer`, én partisjon per innlogget bruker). |
-| Innlogging | Static Web Apps sin innebygde Microsoft-innlogging. Bare brukere med rollen `eier` slipper inn. |
+| Innlogging | Static Web Apps sin innebygde Microsoft-innlogging. API-et slipper bare til e-postadresser i `TILLATTE_BRUKERE`. |
 
 ## Utvikling
 
@@ -31,13 +31,13 @@ npm start      # SWA CLI: app på http://localhost:4280 med API og simulert innl
 
 `npm start` krever Azure Functions Core Tools (`npm i -g azure-functions-core-tools@4`) og `npm install` i `api/`.
 Uten `STORAGE_CONNECTION_STRING` lagres data i `api/.data/entries.json`.
-Ved simulert innlogging må du gi deg selv rollen `eier`.
+Ved simulert innlogging må adressen du oppgir stå i `TILLATTE_BRUKERE` (f.eks. i `api/local.settings.json`).
 
-## Oppsett i Azure (én gang)
+## Oppsett i Azure (én gang) - gjort
 
 1. Opprett en **Storage account** og kopier connection string.
 2. Opprett en **Static Web App** (Free-planen holder) med deployment source «Other».
-3. Under *Environment variables* i Static Web App: legg til `STORAGE_CONNECTION_STRING`.
+3. Under *Environment variables* i Static Web App: legg til `STORAGE_CONNECTION_STRING` og
+   `TILLATTE_BRUKERE` (e-postadressen(e) du logger inn med, kommaseparert).
 4. Kopier *deployment token* og lagre den som GitHub-secret `AZURE_STATIC_WEB_APPS_API_TOKEN`.
    Push til `main` tester og deployer (`.github/workflows/deploy.yml`).
-5. Under *Role management*: inviter deg selv med Microsoft-kontoen og rollen `eier`.

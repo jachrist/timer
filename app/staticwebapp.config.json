@@ -2,7 +2,7 @@
   "routes": [
     { "route": "/manifest.webmanifest", "allowedRoles": ["anonymous"] },
     { "route": "/icon*", "allowedRoles": ["anonymous"] },
-    { "route": "/*", "allowedRoles": ["eier"] }
+    { "route": "/*", "allowedRoles": ["authenticated"] }
   ],
   "responseOverrides": {
     "401": { "redirect": "/.auth/login/aad?post_login_redirect_uri=/", "statusCode": 302 }
