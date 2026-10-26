@@ -209,3 +209,31 @@ export function rowsToEntries(rows, map, defaults = {}) {
 }
 
 export const entryKey = e => `${e.start}|${e.slutt}|${e.beskrivelse}`;
+
+// --- Månedsrapport (timeliste) ---
+
+const WEEKDAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
+export const monthName = m => MONTHS[m];
+
+// Én rad per dag i måneden (month: 0–11). Flere registreringer samme dag slås sammen.
+export function monthReport(entries, year, month) {
+  const days = Array.from({ length: new Date(year, month + 1, 0).getDate() }, (_, i) => {
+    const d = new Date(year, month, i + 1);
+    return { dato: toLocal(d).slice(0, 10), ukedag: WEEKDAYS[d.getDay()], tekster: [], timer: 0 };
+  });
+  const prefix = `${year}-${pad(month + 1)}-`;
+  for (const e of [...entries].sort(byStart)) {
+    if (!e.start.startsWith(prefix)) continue;
+    const day = days[+e.start.slice(8, 10) - 1];
+    day.timer += hours(e);
+    if (e.beskrivelse) day.tekster.push(e.beskrivelse);
+  }
+  return {
+    days: days.map(({ tekster, ...d }) => ({ ...d, tekst: joinTexts(tekster) })),
+    sum: days.reduce((s, d) => s + d.timer, 0),
+  };
+}
+
+// "A." + "B" -> "A. B", "A" + "B" -> "A; B"
+const joinTexts = list =>
+  list.map(t => t.replace(/\s+/g, ' ').trim()).reduce((acc, t) => (acc ? acc + (/[.!?;:]$/.test(acc) ? ' ' : '; ') + t : t), '');

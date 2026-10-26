@@ -81,3 +81,19 @@ test('egen eksport kan importeres igjen', () => {
   const row = [L.toSerial(a.start), L.toSerial(a.slutt), a.beskrivelse, 7.5, 500, 1000, 3750, 7500];
   assert.deepEqual(L.rowsToEntries([row], map).entries, [a]);
 });
+
+test('månedsrapport: alle dager, sammenslåtte linjer og sum', () => {
+  const list = [
+    e('2026-08-04T09:00', '2026-08-04T11:00', 500, 1000, 'Test av FS-oppslag'),
+    e('2026-08-04T12:00', '2026-08-04T12:30', 500, 1000, 'Møte.'),
+    e('2026-08-31T08:00', '2026-08-31T13:00', 500, 1000, 'Backup\nav prod'),
+    e('2026-09-01T08:00', '2026-09-01T10:00'),
+  ];
+  const r = L.monthReport(list.reverse(), 2026, 7);
+  assert.equal(r.days.length, 31);
+  assert.deepEqual(r.days[0], { dato: '2026-08-01', ukedag: 'lørdag', timer: 0, tekst: '' });
+  assert.deepEqual(r.days[3], { dato: '2026-08-04', ukedag: 'tirsdag', timer: 2.5, tekst: 'Test av FS-oppslag; Møte.' });
+  assert.equal(r.days[30].tekst, 'Backup av prod');
+  assert.equal(r.sum, 7.5);
+  assert.equal(L.monthReport([], 2028, 1).days.length, 29);
+});

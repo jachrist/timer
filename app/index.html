@@ -32,6 +32,7 @@
       <button id="next" type="button" aria-label="Neste periode">▶</button>
       <button id="today" type="button">Nå</button>
       <button id="copyPeriod" type="button" title="Kopier periodens linjer som tabell">Kopier periode</button>
+      <button id="reportBtn" type="button" title="Last ned timeliste for en måned som PDF">Timeliste PDF</button>
     </div>
     <div class="cards">
       <div><span>Timer</span><b id="sTimer"></b></div>
@@ -64,6 +65,26 @@
       <menu>
         <button value="cancel" formnovalidate>Avbryt</button>
         <button value="ok" class="primary">Importer</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="reportDlg">
+    <form id="reportForm" method="dialog">
+      <h2>Timeliste (PDF)</h2>
+      <label>Måned <input name="maned" type="month" required></label>
+      <fieldset>
+        <legend>Tekster (huskes til neste gang)</legend>
+        <label>Firma <input name="firma" placeholder="Firma AS"></label>
+        <label>Navn <input name="navn" placeholder="Ditt navn"></label>
+        <label>Timekolonne <input name="kolonne" placeholder="Kunde"></label>
+        <label>Signaturfelt <input name="signaturTittel" placeholder="Bistand kunde"></label>
+        <label>Signeres av <input name="signatar" placeholder="Navn hos kunden"></label>
+        <label>Bunntekst <input name="bunntekst" placeholder="Valgfri"></label>
+      </fieldset>
+      <menu>
+        <button value="cancel" formnovalidate>Avbryt</button>
+        <button value="ok" class="primary">Last ned</button>
       </menu>
     </form>
   </dialog>

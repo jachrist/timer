@@ -1,6 +1,6 @@
 // Nettverk først, cache som reserve: appen åpner (med sist hentede data) også uten nett.
-const CACHE = 'timer-v1';
-const SHELL = ['/', '/index.html', '/app.js', '/lib.js', '/style.css', '/manifest.webmanifest', '/icon.svg'];
+const CACHE = 'timer-v2';
+const SHELL = ['/', '/index.html', '/app.js', '/lib.js', '/rapport.js', '/style.css', '/manifest.webmanifest', '/icon.svg'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
