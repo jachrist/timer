@@ -1,6 +1,8 @@
 import * as L from './lib.js';
+import { timelistePdf } from './rapport.js';
 
 const XLSX_URL = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+const JSPDF_URL = 'https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js';
 const $ = s => document.querySelector(s);
 
 const state = {
@@ -229,21 +231,51 @@ $('#copyPeriod').addEventListener('click', () => {
   copy(L.toTsvPeriod(state.entries.filter(e => L.inRange(e, r))));
 });
 
-// --- Excel ---
+// --- Biblioteker fra CDN, lastes først når de trengs ---
 
-let xlsx;
-function loadXlsx() {
-  return (xlsx ??= new Promise((resolve, reject) => {
+const scripts = {};
+function loadScript(url, global) {
+  return (scripts[url] ??= new Promise((resolve, reject) => {
     document.head.append(el('script', {
-      src: XLSX_URL,
-      onload: () => resolve(window.XLSX),
+      src: url,
+      onload: () => resolve(window[global]),
       onerror: () => {
-        xlsx = null;
-        reject(new Error('Kunne ikke laste Excel-biblioteket'));
+        delete scripts[url];
+        reject(new Error('Kunne ikke laste ' + url.split('/npm/')[1].split('/')[0]));
       },
     }));
   }));
 }
+const loadXlsx = () => loadScript(XLSX_URL, 'XLSX');
+
+// --- Timeliste (PDF) ---
+
+const REPORT_FIELDS = ['firma', 'navn', 'kolonne', 'signaturTittel', 'signatar', 'bunntekst'];
+const reportForm = $('#reportForm');
+
+$('#reportBtn').addEventListener('click', () => {
+  let opts = {};
+  try { opts = JSON.parse(load('rapport')) ?? {}; } catch { /* bruk tomme felt */ }
+  for (const k of REPORT_FIELDS) reportForm[k].value = opts[k] ?? '';
+  reportForm.maned.value = L.toLocal(state.ref).slice(0, 7);
+  $('#reportDlg').showModal();
+});
+
+$('#reportDlg').addEventListener('close', async () => {
+  if ($('#reportDlg').returnValue !== 'ok' || !reportForm.maned.value) return;
+  const opts = Object.fromEntries(REPORT_FIELDS.map(k => [k, reportForm[k].value.trim()]));
+  save('rapport', JSON.stringify(opts));
+  const [year, month] = reportForm.maned.value.split('-').map(Number);
+  try {
+    const { jsPDF } = await loadScript(JSPDF_URL, 'jspdf');
+    const doc = timelistePdf(jsPDF, state.entries, year, month - 1, opts);
+    doc.save(`Timeliste ${opts.navn || ''} ${L.monthName(month - 1)} ${year}.pdf`.replace(/\s+/g, ' '));
+  } catch (err) {
+    toast(err.message);
+  }
+});
+
+// --- Excel ---
 
 $('#exportBtn').addEventListener('click', async () => {
   try {

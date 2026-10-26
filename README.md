@@ -12,12 +12,14 @@ Kan installeres som app (PWA) på PC og mobil.
 - **Importer Excel**: velg ark og kolonner (gjettes fra overskriftene), og timepris for rader som mangler den.
   Klokkeslett over midnatt håndteres, og linjer som finnes fra før hoppes over.
 - **Eksporter** lager en .xlsx med alle registreringer (kan også importeres igjen).
+- **Timeliste PDF** lager en timeliste for signering for valgt måned: alle dager med oppgaver og timer,
+  sum og signaturfelt. Firma, navn, kolonnenavn, signatar og bunntekst huskes på enheten.
 
 ## Oppbygning
 
 | Del | Teknologi |
 | --- | --- |
-| `app/` | Statisk PWA, vanilla JS uten byggesteg. SheetJS lastes fra CDN ved import og eksport. |
+| `app/` | Statisk PWA, vanilla JS uten byggesteg. SheetJS og jsPDF lastes fra CDN først når de trengs. |
 | `api/` | Azure Functions (Node 22), kjøres som managed API i Static Web Apps. |
 | Lagring | Azure Table Storage (tabell `registreringer`, én partisjon per innlogget bruker). |
 | Innlogging | Static Web Apps sin innebygde Microsoft-innlogging. API-et slipper bare til e-postadresser i `TILLATTE_BRUKERE`. |
